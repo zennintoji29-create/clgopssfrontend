@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -17,9 +17,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(form);
-      const user = JSON.parse(localStorage.getItem("user"));
-      navigate(user.role === "admin" ? "/admin" : "/student");
+      await login(form.email, form.password);
+      navigate(user?.role === "admin" ? "/admin" : "/student");
     } catch (err) {
       alert("Invalid credentials");
     }
@@ -38,7 +37,7 @@ const Login = () => {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-800 focus:outline-none"
+            className="w-full p-3 rounded bg-gray-800"
             required
           />
 
@@ -47,11 +46,11 @@ const Login = () => {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-800 focus:outline-none"
+            className="w-full p-3 rounded bg-gray-800"
             required
           />
 
-          <button className="w-full bg-primary py-3 rounded font-semibold hover:opacity-90 transition">
+          <button className="w-full bg-primary py-3 rounded font-semibold">
             Login
           </button>
         </form>
