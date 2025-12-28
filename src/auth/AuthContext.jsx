@@ -1,7 +1,8 @@
+// client/src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -31,12 +32,15 @@ export const AuthProvider = ({ children }) => {
 
     api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     setUser(user);
+
+    return user; // IMPORTANT
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.clear();
     delete api.defaults.headers.common.Authorization;
     setUser(null);
+    window.location.href = "/login";
   };
 
   return (
