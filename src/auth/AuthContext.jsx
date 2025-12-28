@@ -7,37 +7,31 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user on refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const accessToken = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
 
-    if (storedUser && accessToken) {
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
-      api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
     }
-
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
 
-    const { user, accessToken, refreshToken } = res.data.data;
+    const { user, accessToken } = res.data.data;
 
-    localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("user", JSON.stringify(user));
 
     api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     setUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-
+    localStorage.clear();
     delete api.defaults.headers.common.Authorization;
     setUser(null);
   };
