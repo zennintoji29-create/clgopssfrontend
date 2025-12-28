@@ -1,9 +1,10 @@
+// client/src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -11,23 +12,29 @@ const Login = () => {
     password: "",
   });
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(form.email, form.password);
-      navigate(user?.role === "admin" ? "/admin" : "/student");
+      const loggedInUser = await login(form.email, form.password);
+
+      navigate(
+        loggedInUser.role === "ADMIN" || loggedInUser.role === "admin"
+          ? "/admin"
+          : "/student"
+      );
     } catch (err) {
-      alert("Invalid credentials");
+      alert("Invalid email or password");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-      <div className="bg-glass backdrop-blur-md p-8 rounded-2xl w-full max-w-md shadow-xl">
-        <h2 className="text-2xl font-bold mb-6 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="p-8 rounded-xl w-full max-w-md bg-gray-900">
+        <h2 className="text-2xl font-bold mb-6 text-center text-white">
           CollegeOps Login
         </h2>
 
@@ -37,7 +44,7 @@ const Login = () => {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-800"
+            className="w-full p-3 rounded bg-gray-800 text-white"
             required
           />
 
@@ -46,18 +53,18 @@ const Login = () => {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full p-3 rounded bg-gray-800"
+            className="w-full p-3 rounded bg-gray-800 text-white"
             required
           />
 
-          <button className="w-full bg-primary py-3 rounded font-semibold">
+          <button className="w-full bg-blue-600 py-3 rounded font-semibold text-white">
             Login
           </button>
         </form>
 
-        <p className="text-center mt-4 text-sm text-gray-400">
+        <p className="text-center mt-4 text-gray-400">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-primary">
+          <Link to="/register" className="text-blue-500">
             Register
           </Link>
         </p>
