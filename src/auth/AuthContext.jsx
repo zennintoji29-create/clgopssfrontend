@@ -10,32 +10,36 @@ export const AuthProvider = ({ children }) => {
   // Load user on refresh
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const accessToken = localStorage.getItem("accessToken");
 
-    if (storedUser && token) {
+    if (storedUser && accessToken) {
       setUser(JSON.parse(storedUser));
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
     }
+
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
+    const { user, accessToken, refreshToken } = res.data.data;
 
-    api.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${res.data.token}`;
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("user", JSON.stringify(user));
 
-    setUser(res.data.user);
+    api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+    setUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    delete api.defaults.headers.common["Authorization"];
+
+    delete api.defaults.headers.common.Authorization;
     setUser(null);
   };
 
