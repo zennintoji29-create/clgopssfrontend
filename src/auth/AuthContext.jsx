@@ -25,19 +25,18 @@ export const AuthProvider = ({ children }) => {
 
     const { user, accessToken, refreshToken } = res.data.data;
 
+    localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("user", JSON.stringify(user));
 
     api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-
     setUser(user);
   };
 
   const logout = () => {
+    localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
 
     delete api.defaults.headers.common.Authorization;
     setUser(null);
