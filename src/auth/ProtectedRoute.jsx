@@ -4,8 +4,12 @@ import { useAuth } from "./AuthContext";
 const ProtectedRoute = ({ children, role }) => {
   const { user } = useAuth();
 
-  if (!user) return <Navigate to="/login" replace />;
+  // Not logged in
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
+  // Role-based protection
   if (role && user.role !== role) {
     return <Navigate to="/" replace />;
   }
